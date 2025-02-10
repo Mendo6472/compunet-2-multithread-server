@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DAMN!!!!!!!</title>
+  <style>
+    /* Remove default margins and hide scrollbars */
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    /* Animate a moving background made up of our bird image */
+    body {
+      background: url('damn-bird.png') repeat;
+      animation: backgroundMove 20s linear infinite;
+    }
+    @keyframes backgroundMove {
+      from { background-position: 0 0; }
+      to { background-position: 1000px 1000px; }
+    }
+
+    /* The bouncing bird in the foreground */
+    #bouncing-bird {
+      position: absolute;
+      width: 250px;
+      /* height auto so the aspect ratio is maintained */
+      height: auto;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* Style for the falling (raining) birds */
+    .raining-bird {
+      position: absolute;
+      width: 100px;
+      height: auto;
+      pointer-events: none;
+      /* Each bird will animate falling from above the viewport to the bottom */
+      animation: fall linear;
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- The bouncing bird element -->
+  <img id="bouncing-bird" src="damn-bird.png" alt="Bouncing Bird">
+
+  <script>
+    // Bouncing bird animation using JavaScript physics
+    (function() {
+      const bird = document.getElementById('bouncing-bird');
+      let posX = Math.random() * (window.innerWidth - 100);
+      let posY = Math.random() * (window.innerHeight - 100);
+      let velX = (Math.random() * 4 + 2) * (Math.random() < 0.5 ? -1 : 1);
+      let velY = (Math.random() * 4 + 2) * (Math.random() < 0.5 ? -1 : 1);
+      const birdSize = 250; // bird width in px
+
+      function animate() {
+        posX += velX;
+        posY += velY;
+
+        // Bounce off the left/right edges
+        if (posX <= 0 || posX + birdSize >= window.innerWidth) {
+          velX = -velX;
+          posX = Math.max(0, Math.min(posX, window.innerWidth - birdSize));
+        }
+        // Bounce off the top/bottom edges
+        if (posY <= 0 || posY + birdSize >= window.innerHeight) {
+          velY = -velY;
+          posY = Math.max(0, Math.min(posY, window.innerHeight - birdSize));
+        }
+
+        bird.style.left = posX + 'px';
+        bird.style.top = posY + 'px';
+
+        requestAnimationFrame(animate);
+      }
+      
+      animate();
+    })();
+
+    // Create falling (raining) birds
+    (function() {
+      function createRainingBird() {
+        const fallingBird = document.createElement('img');
+        fallingBird.src = 'damn-bird.png';
+        fallingBird.className = 'raining-bird';
+        // Random horizontal starting position across the viewport
+        fallingBird.style.left = Math.random() * window.innerWidth + 'px';
+        // Randomize the duration of the fall between 3 and 7 seconds
+        const duration = Math.random() * 4 + 3;
+        fallingBird.style.animationDuration = duration + 's';
+        // Append to the body
+        document.body.appendChild(fallingBird);
+        // Remove the bird element after its animation is done
+        setTimeout(() => {
+          fallingBird.remove();
+        }, duration * 1000);
+      }
+
+      // Create a new falling bird every 500 milliseconds
+      setInterval(createRainingBird, 500);
+    })();
+  </script>
+</body>
+</html>
